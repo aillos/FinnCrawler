@@ -21,13 +21,10 @@ class FinnSpider(scrapy.Spider):
                 self.logger.info(f"Following URL: {listing_url}")
                 yield response.follow(listing_url, self.parse_listing)
 
-        # Fetch the current page number from response's meta or set it to 2 if it doesn't exist
         current_page = response.meta.get('current_page', 2)
 
-        # Create the next page URL using the base of the current response URL
         next_page = response.url.split("?")[0] + "?page=" + str(current_page)
 
-        # Only proceed to the next page if we haven't reached the limit
         if current_page < 35:
             self.logger.info(f"Following next page: {next_page}")
             yield response.follow(next_page, self.parse, meta={'current_page': current_page + 1})
