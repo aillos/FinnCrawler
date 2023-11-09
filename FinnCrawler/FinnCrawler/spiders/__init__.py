@@ -10,7 +10,7 @@ class FinnSpider(scrapy.Spider):
 
     custom_settings = {
         'FEED_FORMAT': 'csv',
-        'FEED_URI': 'house_listings.csv',
+        'FEED_URI': '../house_listings.csv',
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
 
@@ -42,24 +42,32 @@ class FinnSpider(scrapy.Spider):
             latitude = data.get("latitude")
             longitude = data.get("longitude")
             postNumber = data.get("postNumber")
+            type = data.get("propertyType")
+            ownership = data.get("ownership")
 
             units = data.get('units', [])
             total_prices = [unit.get('totalPrice') for unit in units if unit.get('totalPrice')]
 
-            if total_prices:
-                average_price = sum(total_prices) / len(total_prices)
-                average_price = round(average_price)
-            else:
-                average_price = 0
-
             total_sqft = [unit.get('usableArea') for unit in units if unit.get('usableArea')]
 
-            if total_sqft:
-                average_sqft = sum(total_sqft) / len(total_sqft)
-                average_sqft = round(average_sqft)
+            if total_prices:
+                average_price = total_prices[0]
+                if len(total_prices) > 1:
+                    average_price = sum(total_prices) / len(total_prices)
+                    average_price = round(average_price)
             else:
-                average_sqft = 0
+                average_price = data.get("totalPrice")
 
+            if total_sqft:
+                average_sqft = total_sqft[0]
+                if len(total_sqft) > 1:
+                    average_sqft = sum(total_sqft) / len(total_sqft)
+                    average_sqft = round(average_sqft)
+            else:
+                average_sqft = data.get("usableArea")
+
+            if average_price == 0:
+                self.logger.info(data)
 
             new_item = HouseListingItem()
             new_item["latitude"] = latitude
@@ -67,4 +75,6 @@ class FinnSpider(scrapy.Spider):
             new_item["postNumber"] = postNumber
             new_item["totalPrice"] = average_price
             new_item["usableArea"] = average_sqft
+            new_item["propertyType"] = type
+            new_item["ownership"] = ownership
             yield new_item

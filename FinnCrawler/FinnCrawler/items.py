@@ -6,3 +6,5 @@ class HouseListingItem(scrapy.Item):
     postNumber = scrapy.Field()
     totalPrice = scrapy.Field()
     usableArea = scrapy.Field()
+    propertyType = scrapy.Field()
+    ownership = scrapy.Field()
