@@ -1,5 +1,6 @@
 import scrapy
 
+
 class HouseListingItem(scrapy.Item):
     latitude = scrapy.Field()
     longitude = scrapy.Field()
@@ -8,3 +9,5 @@ class HouseListingItem(scrapy.Item):
     usableArea = scrapy.Field()
     propertyType = scrapy.Field()
     ownership = scrapy.Field()
+    energyLabel = scrapy.Field()
+    energyColor = scrapy.Field()

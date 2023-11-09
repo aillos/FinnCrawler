@@ -18,7 +18,7 @@ class FinnSpider(scrapy.Spider):
         listing_urls = response.css('.sf-search-ad-link.link.link--dark.hover\\:no-underline::attr(href)').getall()
         for listing_url in listing_urls:
             if listing_url:
-                self.logger.info(f"Following URL: {listing_url}")
+                #self.logger.info(f"Following URL: {listing_url}")
                 yield response.follow(listing_url, self.parse_listing)
 
         parsed_url = urlparse(response.url)
@@ -30,7 +30,7 @@ class FinnSpider(scrapy.Spider):
         next_page_url = parsed_url._replace(query=urlencode(query_params, doseq=True)).geturl()
 
         if current_page < 60:
-            self.logger.info(f"Following next page: {next_page_url}")
+            #self.logger.info(f"Following next page: {next_page_url}")
             yield response.follow(next_page_url, self.parse, meta={'current_page': current_page + 1})
 
     def parse_listing(self, response):
@@ -44,6 +44,8 @@ class FinnSpider(scrapy.Spider):
             postNumber = data.get("postNumber")
             type = data.get("propertyType")
             ownership = data.get("ownership")
+            energy_color = data.get("energyColorCode")
+            energy_label = data.get("energyLabel")
 
             units = data.get('units', [])
             total_prices = [unit.get('totalPrice') for unit in units if unit.get('totalPrice')]
@@ -77,4 +79,6 @@ class FinnSpider(scrapy.Spider):
             new_item["usableArea"] = average_sqft
             new_item["propertyType"] = type
             new_item["ownership"] = ownership
+            new_item["energyLabel"] = energy_label
+            new_item["energyColor"] = energy_color
             yield new_item
