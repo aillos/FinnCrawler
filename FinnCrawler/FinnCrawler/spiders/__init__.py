@@ -10,7 +10,7 @@ class FinnSpider(scrapy.Spider):
 
     custom_settings = {
         'FEED_FORMAT': 'csv',
-        'FEED_URI': '../house_listings.csv',
+        'FEED_URI': '../house_listings_w_15var.csv',
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
 
@@ -29,7 +29,7 @@ class FinnSpider(scrapy.Spider):
 
         next_page_url = parsed_url._replace(query=urlencode(query_params, doseq=True)).geturl()
 
-        if current_page < 60:
+        if current_page < 70:
             #self.logger.info(f"Following next page: {next_page_url}")
             yield response.follow(next_page_url, self.parse, meta={'current_page': current_page + 1})
 
@@ -38,6 +38,7 @@ class FinnSpider(scrapy.Spider):
 
         if json_data:
             data = json.loads(json_data)
+            #self.logger.info(data)
 
             latitude = data.get("latitude")
             longitude = data.get("longitude")
@@ -46,6 +47,12 @@ class FinnSpider(scrapy.Spider):
             ownership = data.get("ownership")
             energy_color = data.get("energyColorCode")
             energy_label = data.get("energyLabel")
+            create_date = data.get("createdAt")
+            bedrooms = data.get("bedrooms")
+            lastUpdated = data.get("lastUpdatedAt")
+            isSold = data.get("isSold")
+            primaryRoom = data.get("primaryRoomArea")
+            rooms = data.get("rooms")
 
             units = data.get('units', [])
             total_prices = [unit.get('totalPrice') for unit in units if unit.get('totalPrice')]
@@ -81,4 +88,10 @@ class FinnSpider(scrapy.Spider):
             new_item["ownership"] = ownership
             new_item["energyLabel"] = energy_label
             new_item["energyColor"] = energy_color
+            new_item["createDate"] = create_date
+            new_item["bedrooms"] = bedrooms
+            new_item["lastUpdated"] = lastUpdated
+            new_item["isSold"] = isSold
+            new_item["primaryRoom"] = primaryRoom
+            new_item["rooms"] = rooms
             yield new_item
