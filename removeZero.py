@@ -8,7 +8,8 @@ def is_valid_row(row):
     try:
         return (float(row['totalPrice'].strip()) >= 150000 and
                 float(row['usableArea'].strip()) >= 15 and
-                row['latitude'].strip() != '')
+                row['latitude'].strip() != '' and
+                row['propertyType'].strip() != 'Andre')
     except ValueError:
         return False
 
