@@ -19,3 +19,4 @@ class HouseListingItem(scrapy.Item):
     primaryRoom = scrapy.Field()
     finnkode = scrapy.Field()
     built = scrapy.Field()
+    facilities = scrapy.Field()

@@ -90,6 +90,7 @@ class FinnSpider(scrapy.Spider):
             rooms = data.get("rooms")
             primaryRoom = data.get("primaryRoomArea")
             bedrooms = data.get("bedrooms")
+            facilities = data.get("facilities")
 
             description_list = data.get('descriptionList', [])
             byggeår = None
@@ -119,6 +120,7 @@ class FinnSpider(scrapy.Spider):
                     new_item["primaryRoom"] = unit.get('primaryRoomArea')
                     new_item["rooms"] = unit.get('rooms')
                     new_item["built"] = byggeår
+                    new_item["facilities"] = facilities
                     yield new_item
             else:
                 new_item = HouseListingItem()
@@ -139,4 +141,5 @@ class FinnSpider(scrapy.Spider):
                 new_item["primaryRoom"] = primaryRoom
                 new_item["rooms"] = rooms
                 new_item["built"] = byggeår
+                new_item["facilities"] = facilities
                 yield new_item
