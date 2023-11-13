@@ -1,7 +1,7 @@
 import csv
 from more_itertools import unique_everseen
 
-input_file_path = 'FinnCrawler/house_listings_w_15var.csv'
+input_file_path = 'house_listings_w_15var.csv'
 output_file_path = 'house_listing_w_15var_noZeroDupe.csv'
 
 with open(input_file_path, 'r', newline='') as f, open(output_file_path, 'w', newline='') as out_file:
