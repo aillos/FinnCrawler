@@ -17,3 +17,5 @@ class HouseListingItem(scrapy.Item):
     isSold = scrapy.Field()
     rooms = scrapy.Field()
     primaryRoom = scrapy.Field()
+    finnkode = scrapy.Field()
+    built = scrapy.Field()
