@@ -6,7 +6,7 @@ output_file_path = 'house_listing_w_15var_noSmallArea.csv'
 
 def is_valid_row(row):
     try:
-        return (float(row['totalPrice'].strip()) >= 100000 and
+        return (float(row['totalPrice'].strip()) >= 150000 and
                 float(row['usableArea'].strip()) >= 15 and
                 row['latitude'].strip() != '')
     except ValueError:
