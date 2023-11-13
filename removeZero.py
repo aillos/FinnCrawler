@@ -3,13 +3,15 @@ import csv
 input_file_path = 'house_listings_w_15var2.csv'
 output_file_path = 'house_listing_w_15var_noSmallArea.csv'
 
+
 def is_valid_row(row):
     try:
-        return (row['totalPrice'].strip() not in ('', '0') and
+        return (float(row['totalPrice'].strip()) >= 100000 and
                 float(row['usableArea'].strip()) >= 15 and
                 row['latitude'].strip() != '')
     except ValueError:
         return False
+
 
 with open(input_file_path, 'r', newline='') as f, open(output_file_path, 'w', newline='') as out_file:
     reader = csv.DictReader(f)
