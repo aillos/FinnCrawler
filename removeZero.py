@@ -1,6 +1,6 @@
 import csv
 
-input_file_path = 'house_listings_w_15var2.csv'
+input_file_path = 'house_listings_w_15var3.csv'
 output_file_path = 'house_listing_w_15var_noSmallArea.csv'
 
 

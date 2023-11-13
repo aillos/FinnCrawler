@@ -44,7 +44,7 @@ class FinnSpider(scrapy.Spider):
 
     custom_settings = {
         'FEED_FORMAT': 'csv',
-        'FEED_URI': '../house_listings_w_15var2.csv',
+        'FEED_URI': '../house_listings_w_15var3.csv',
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
 
@@ -72,7 +72,7 @@ class FinnSpider(scrapy.Spider):
 
         if json_data:
             data = json.loads(json_data)
-            self.logger.info(data)
+            #self.logger.info(data)
 
             finnkode = data.get("finnkode")
             latitude = data.get("latitude")
