@@ -1,10 +1,15 @@
 import csv
 
 input_file_path = 'house_listings_w_15var2.csv'
-output_file_path = 'house_listing_w_15var_noZero.csv'
+output_file_path = 'house_listing_w_15var_noSmallArea.csv'
 
-def is_non_zero_and_non_empty(value):
-    return value.strip() not in ('', '0')
+def is_valid_row(row):
+    try:
+        return (row['totalPrice'].strip() not in ('', '0') and
+                float(row['usableArea'].strip()) >= 15 and
+                row['latitude'].strip() != '')
+    except ValueError:
+        return False
 
 with open(input_file_path, 'r', newline='') as f, open(output_file_path, 'w', newline='') as out_file:
     reader = csv.DictReader(f)
@@ -12,5 +17,5 @@ with open(input_file_path, 'r', newline='') as f, open(output_file_path, 'w', ne
     writer.writeheader()
 
     for row in reader:
-        if all(is_non_zero_and_non_empty(row[field].strip()) for field in ['totalPrice', 'usableArea', 'latitude']):
+        if is_valid_row(row):
             writer.writerow(row)
