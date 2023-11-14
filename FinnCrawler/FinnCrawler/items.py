@@ -20,3 +20,5 @@ class HouseListingItem(scrapy.Item):
     finnkode = scrapy.Field()
     built = scrapy.Field()
     facilities = scrapy.Field()
+    localAreaName = scrapy.Field()
+    postArea = scrapy.Field()
