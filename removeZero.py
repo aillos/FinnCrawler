@@ -1,7 +1,7 @@
 import csv
 
-input_file_path = 'house_listings_w_15var5.csv'
-output_file_path = 'house_listing_w_15var_noSmallArea.csv'
+input_file_path = 'house_listings.csv'
+output_file_path = 'house_listing_clean.csv'
 
 
 def is_valid_row(row):
@@ -10,6 +10,7 @@ def is_valid_row(row):
                 float(row['usableArea'].strip()) >= 15 and
                 row['latitude'].strip() != '' and
                 row['longitude'].strip() != '' and
+                float(row['usableArea'].strip()) <= 1000 and
                 row['propertyType'].strip() != 'Andre')
     except ValueError:
         return False

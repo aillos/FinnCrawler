@@ -49,7 +49,7 @@ class FinnSpider(scrapy.Spider):
 
     custom_settings = {
         'FEED_FORMAT': 'csv',
-        'FEED_URI': '../house_listings_w_15var5.csv',
+        'FEED_URI': '../house_listings.csv',
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
 
@@ -111,8 +111,8 @@ class FinnSpider(scrapy.Spider):
             longitude = float(data.get("longitude"))
             postNumber = data.get("postNumber")
             ownership = data.get("ownership")
-            energy_label = data.get("energyLabel", "")
-            energy_color = data.get("energyColorCode", "")
+            energy_label = data.get("energyLabel")
+            energy_color = data.get("energyColorCode")
             create_date = data.get("createdAt")
             lastUpdated = data.get("lastUpdatedAt")
             isSold = bool(data.get("isSold"))
@@ -146,10 +146,8 @@ class FinnSpider(scrapy.Spider):
                     new_item["usableArea"] = unit.get('usableArea')
                     new_item["propertyType"] = unit.get('propertyType')
                     new_item["ownership"] = ownership
-                    if not energy_label and not energy_color:
-                        new_item["energy"] = None  # or "" if you prefer an empty string
-                    else:
-                        new_item["energy"] = f"{energy_label} {energy_color}".strip()
+                    new_item["energy_label"] = energy_label
+                    new_item["energy_color"] = energy_color
                     #new_item["createDate"] = create_date
                     new_item["bedrooms"] = unit.get('bedrooms')
                     new_item["lastUpdated"] = self.standardize_date(lastUpdated)
@@ -172,10 +170,8 @@ class FinnSpider(scrapy.Spider):
                 new_item["usableArea"] = usableArea
                 new_item["propertyType"] = type
                 new_item["ownership"] = ownership
-                if not energy_label and not energy_color:
-                    new_item["energy"] = None  # or "" if you prefer an empty string
-                else:
-                    new_item["energy"] = f"{energy_label} {energy_color}".strip()
+                new_item["energy_label"] = energy_label
+                new_item["energy_color"] = energy_color
                 #new_item["createDate"] = create_date
                 new_item["bedrooms"] = bedrooms
                 new_item["lastUpdated"] = self.standardize_date(lastUpdated)
@@ -237,9 +233,11 @@ class FinnSpider(scrapy.Spider):
             else:
                 primary = None
 
-            energy_selector = response.xpath('//div[@data-testid="energy-label"]/dd/text()')
+            energy_selector = response.xpath('//span[@data-testid="energy-label-info"]/text()')
             if energy_selector:
-                energy = energy_selector.get().strip()
+                energy_full_text = energy_selector.get().strip()
+                energy = energy_full_text[0] if energy_full_text else None
+                energy_last_word = energy_full_text.split()[-1] if energy_full_text else None
             else:
                 energy = None
 
@@ -284,7 +282,8 @@ class FinnSpider(scrapy.Spider):
             new_item["usableArea"] = area
             new_item["propertyType"] = prop_type
             new_item["ownership"] = owner
-            new_item["energy"] = energy
+            new_item["energy_label"] = energy
+            new_item["energy_color"] = energy_last_word
             new_item["bedrooms"] = bed
             new_item["rooms"] = room
             new_item["lastUpdated"] = self.standardize_date(response.xpath('/html/body/main/section[2]/div[1]/table/tbody/tr[2]/td/text()').get())
