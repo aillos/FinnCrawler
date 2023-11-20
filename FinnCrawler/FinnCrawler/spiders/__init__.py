@@ -1,3 +1,6 @@
+from datetime import datetime
+import re
+
 import scrapy
 import json
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
@@ -7,7 +10,9 @@ from ..items import HouseListingItem
 
 class FinnSpider(scrapy.Spider):
     name = "finn"
-    # start_urls = ["https://www.finn.no/realestate/homes/search.html?location=0.22042", "https://www.finn.no/realestate/homes/search.html?location=0.22034", "https://www.finn.no/realestate/homes/search.html?location=0.20015", "https://www.finn.no/realestate/homes/search.html?location=0.20018", "https://www.finn.no/realestate/homes/search.html?location=0.20061", "https://www.finn.no/realestate/homes/search.html?location=0.20012", "https://www.finn.no/realestate/homes/search.html?location=0.22054", "https://www.finn.no/realestate/homes/search.html?location=0.20016", "https://www.finn.no/realestate/homes/search.html?location=0.22038", "https://www.finn.no/realestate/homes/search.html?location=0.22046", "https://www.finn.no/realestate/homes/search.html?location=1.22030.20046&location=1.22030.20045&location=1.22030.20110&location=1.22030.20024&location=1.22030.20042", "https://www.finn.no/realestate/homes/search.html?location=1.22030.20026&location=1.22030.20047&location=1.22030.20058&location=1.22030.20051&location=1.22030.20128&location=1.22030.20114&location=1.22030.20055&location=1.22030.20116&location=1.22030.20021&location=1.22030.20117&location=1.22030.20119&location=1.22030.20113&location=1.22030.20060&location=1.22030.20025&location=1.22030.22103&location=1.22030.20099&location=1.22030.20111&location=1.22030.20121&location=1.22030.20125&location=1.22030.22105", "https://www.finn.no/realestate/homes/search.html?location=1.22030.20100&location=1.22030.20052&location=1.22030.20027&location=1.22030.20122&location=1.22030.20022&location=1.22030.20059&location=1.22030.20057&location=1.22030.20115&location=1.22030.20043&location=1.22030.20054&location=1.22030.20130&location=1.22030.20034&location=1.22030.20112&location=1.22030.22104", "https://www.finn.no/realestate/homes/search.html?location=1.22030.20129&location=1.22030.20035&location=1.22030.20050&location=1.22030.20023&location=1.22030.20120&location=1.22030.20033&location=1.22030.20056&location=1.22030.20039&location=1.22030.20037&location=1.22030.20118&location=1.22030.20041&location=1.22030.20123"]
+    #start_urls3 = ["https://www.finn.no/realestate/homes/ad.html?finnkode=329035383"]
+
+    #start_urls4 = ["https://www.finn.no/realestate/homes/search.html?location=0.22042", "https://www.finn.no/realestate/homes/search.html?location=0.22034", "https://www.finn.no/realestate/homes/search.html?location=0.20015", "https://www.finn.no/realestate/homes/search.html?location=0.20018", "https://www.finn.no/realestate/homes/search.html?location=0.20061", "https://www.finn.no/realestate/homes/search.html?location=0.20012", "https://www.finn.no/realestate/homes/search.html?location=0.22054", "https://www.finn.no/realestate/homes/search.html?location=0.20016", "https://www.finn.no/realestate/homes/search.html?location=0.22038", "https://www.finn.no/realestate/homes/search.html?location=0.22046", "https://www.finn.no/realestate/homes/search.html?location=1.22030.20046&location=1.22030.20045&location=1.22030.20110&location=1.22030.20024&location=1.22030.20042", "https://www.finn.no/realestate/homes/search.html?location=1.22030.20026&location=1.22030.20047&location=1.22030.20058&location=1.22030.20051&location=1.22030.20128&location=1.22030.20114&location=1.22030.20055&location=1.22030.20116&location=1.22030.20021&location=1.22030.20117&location=1.22030.20119&location=1.22030.20113&location=1.22030.20060&location=1.22030.20025&location=1.22030.22103&location=1.22030.20099&location=1.22030.20111&location=1.22030.20121&location=1.22030.20125&location=1.22030.22105", "https://www.finn.no/realestate/homes/search.html?location=1.22030.20100&location=1.22030.20052&location=1.22030.20027&location=1.22030.20122&location=1.22030.20022&location=1.22030.20059&location=1.22030.20057&location=1.22030.20115&location=1.22030.20043&location=1.22030.20054&location=1.22030.20130&location=1.22030.20034&location=1.22030.20112&location=1.22030.22104", "https://www.finn.no/realestate/homes/search.html?location=1.22030.20129&location=1.22030.20035&location=1.22030.20050&location=1.22030.20023&location=1.22030.20120&location=1.22030.20033&location=1.22030.20056&location=1.22030.20039&location=1.22030.20037&location=1.22030.20118&location=1.22030.20041&location=1.22030.20123"]
     start_urls = [
         "https://www.finn.no/realestate/homes/search.html?location=1.22042.20166&location=1.22042.20172&location=1.22042.20178&location=1.22042.20176&location=1.22042.20175&location=1.22042.20181&location=1.22042.20182&location=1.22042.20170&location=1.22042.20167&location=1.22042.20191&location=1.22042.20165&location=1.22042.20174&location=1.22042.20179&location=1.22042.20192",
         "https://www.finn.no/realestate/homes/search.html?location=1.22042.20189&location=1.22042.20171&location=1.22042.20190&location=1.22042.20164&location=1.22042.20193&location=1.22042.20169&location=1.22042.20168&location=1.22042.20177&location=1.22042.20183&location=1.22042.20173&location=1.22042.20187",
@@ -44,9 +49,33 @@ class FinnSpider(scrapy.Spider):
 
     custom_settings = {
         'FEED_FORMAT': 'csv',
-        'FEED_URI': '../house_listings_w_15var3.csv',
+        'FEED_URI': '../house_listings_w_15var5.csv',
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
+
+    @staticmethod
+    def standardize_date(date_str):
+
+        iso_match = re.match(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', date_str)
+        if iso_match:
+
+            return datetime.fromisoformat(date_str).isoformat()
+
+        else:
+
+            month_mapping = {
+                'jan.': '01', 'feb.': '02', 'mar': '03', 'apr.': '04',
+                'mai': '05', 'jun': '06', 'jul': '07', 'aug.': '08',
+                'sep.': '09', 'okt.': '10', 'nov.': '11', 'des.': '12'
+            }
+
+            for nor_month, num_month in month_mapping.items():
+                if nor_month in date_str:
+                    date_str = date_str.replace(nor_month, num_month)
+                    break
+
+            date_obj = datetime.strptime(date_str, '%d. %m %Y %H:%M')
+            return date_obj.isoformat()
 
     def parse(self, response):
         listing_urls = response.css('.sf-search-ad-link.link.link--dark.hover\\:no-underline::attr(href)').getall()
@@ -68,22 +97,25 @@ class FinnSpider(scrapy.Spider):
             yield response.follow(next_page_url, self.parse, meta={'current_page': current_page + 1})
 
     def parse_listing(self, response):
+        #self.logger.info(response)
         json_data = response.xpath('//script[@id="ad-data"]/text()').get()
+        #self.logger.info(json_data2)
+
 
         if json_data:
             data = json.loads(json_data)
             #self.logger.info(data)
 
-            finnkode = data.get("finnkode")
-            latitude = data.get("latitude")
-            longitude = data.get("longitude")
+            finnkode = int(data.get("finnkode"))
+            latitude = float(data.get("latitude"))
+            longitude = float(data.get("longitude"))
             postNumber = data.get("postNumber")
             ownership = data.get("ownership")
-            energy_color = data.get("energyColorCode")
-            energy_label = data.get("energyLabel")
+            energy_label = data.get("energyLabel", "")
+            energy_color = data.get("energyColorCode", "")
             create_date = data.get("createdAt")
             lastUpdated = data.get("lastUpdatedAt")
-            isSold = data.get("isSold")
+            isSold = bool(data.get("isSold"))
             totalPrice = data.get("totalPrice")
             usableArea = data.get("usableArea")
             type = data.get("propertyType")
@@ -94,6 +126,7 @@ class FinnSpider(scrapy.Spider):
             postArea = data.get("postArea")
             localAreaName = data.get("localAreaName")
 
+            #self.logger.info(nybygg)
             description_list = data.get('descriptionList', [])
             built = None
             for item in description_list:
@@ -113,18 +146,21 @@ class FinnSpider(scrapy.Spider):
                     new_item["usableArea"] = unit.get('usableArea')
                     new_item["propertyType"] = unit.get('propertyType')
                     new_item["ownership"] = ownership
-                    new_item["energyLabel"] = energy_label
-                    new_item["energyColor"] = energy_color
-                    new_item["createDate"] = create_date
+                    if not energy_label and not energy_color:
+                        new_item["energy"] = None  # or "" if you prefer an empty string
+                    else:
+                        new_item["energy"] = f"{energy_label} {energy_color}".strip()
+                    #new_item["createDate"] = create_date
                     new_item["bedrooms"] = unit.get('bedrooms')
-                    new_item["lastUpdated"] = lastUpdated
-                    new_item["isSold"] = unit.get("isSold")
+                    new_item["lastUpdated"] = self.standardize_date(lastUpdated)
+                    new_item["isSold"] = bool(unit.get("isSold"))
                     new_item["primaryRoom"] = unit.get('primaryRoomArea')
                     new_item["rooms"] = unit.get('rooms')
                     new_item["built"] = built
                     new_item["facilities"] = facilities
                     new_item["postArea"] = postArea
                     new_item["localAreaName"] = localAreaName
+                    new_item["new"] = bool(True)
                     yield new_item
             else:
                 new_item = HouseListingItem()
@@ -136,11 +172,13 @@ class FinnSpider(scrapy.Spider):
                 new_item["usableArea"] = usableArea
                 new_item["propertyType"] = type
                 new_item["ownership"] = ownership
-                new_item["energyLabel"] = energy_label
-                new_item["energyColor"] = energy_color
-                new_item["createDate"] = create_date
+                if not energy_label and not energy_color:
+                    new_item["energy"] = None  # or "" if you prefer an empty string
+                else:
+                    new_item["energy"] = f"{energy_label} {energy_color}".strip()
+                #new_item["createDate"] = create_date
                 new_item["bedrooms"] = bedrooms
-                new_item["lastUpdated"] = lastUpdated
+                new_item["lastUpdated"] = self.standardize_date(lastUpdated)
                 new_item["isSold"] = isSold
                 new_item["primaryRoom"] = primaryRoom
                 new_item["rooms"] = rooms
@@ -148,4 +186,114 @@ class FinnSpider(scrapy.Spider):
                 new_item["facilities"] = facilities
                 new_item["postArea"] = postArea
                 new_item["localAreaName"] = localAreaName
+                new_item["new"] = bool(True)
                 yield new_item
+
+        else:
+            full_address = response.xpath('//a[@data-testid="map-link"]/span[@data-testid="object-address"]/text()').get()
+            url = response.xpath('//a[@data-testid="map-link"]/@href').get()
+            parsed_url = urlparse(url) if url else None
+            query_params = parse_qs(parsed_url.query) if parsed_url else {}
+
+            latitude = float(query_params.get("lat", [None])[0]) if query_params.get("lat", [None])[0] else None
+            longitude = float(query_params.get("lng", query_params.get("lon", [None]))[0]) if \
+            query_params.get("lng", query_params.get("lon", [None]))[0] else None
+
+
+            if full_address:
+                parts = full_address.split(',')
+
+                if len(parts) > 1:
+                    post_location = parts[1].strip().split(' ')
+                    postCode = post_location[0]
+                    postLoc = ' '.join(post_location[1:])
+            else:
+                postCode = "none"
+                postLoc = "none"
+
+            construction_year_selector = response.xpath('//div[@data-testid="info-construction-year"]/dd/text()')
+            if construction_year_selector:
+                built_year = construction_year_selector.get().strip()
+            else:
+                built_year = None
+
+            property_type_selector = response.xpath('//div[@data-testid="info-property-type"]/dd/text()')
+            if property_type_selector:
+                prop_type = property_type_selector.get().strip()
+            else:
+                prop_type = None
+
+            bedroom_selector = response.xpath('//div[@data-testid="info-bedrooms"]/dd/text()')
+            if bedroom_selector:
+                bed = bedroom_selector.get().strip()
+            else:
+                bed = None
+
+            primary_selector = response.xpath('//div[@data-testid="info-primary_area"]/dd/text()')
+            if primary_selector:
+                primary_text = primary_selector.get().strip()
+                primary_match = re.search(r'(\d+)', primary_text)
+                primary = primary_match.group(1) if primary_match else None
+            else:
+                primary = None
+
+            energy_selector = response.xpath('//div[@data-testid="energy-label"]/dd/text()')
+            if energy_selector:
+                energy = energy_selector.get().strip()
+            else:
+                energy = None
+
+            ownership_selector = response.xpath('//div[@data-testid="info-ownership-type"]/dd/text()')
+            if ownership_selector:
+                owner = ownership_selector.get().strip()
+            else:
+                owner = None
+
+            area_selector = response.xpath('//div[@data-testid="info-usable-area"]/dd/text()')
+            if area_selector:
+                area_text = area_selector.get().strip()
+                area_match = re.search(r'(\d+)', area_text)
+                area = area_match.group(1) if area_match else None
+            else:
+                area = None
+
+            room_selector = response.xpath('//div[@data-testid="info-rooms"]/dd/text()')
+            if room_selector:
+                room = room_selector.get().strip()
+            else:
+                room = None
+
+            facilities_selector=response.xpath('//section[@data-testid="object-facilities"]/div/div/text()').extract()
+            if facilities_selector:
+                facilities = facilities_selector
+            else:
+                facilities = None
+
+            total_price_selector = response.xpath('//div[@data-testid="pricing-total-price"]/dd/text()')
+            total_price = total_price_selector.get()
+            if total_price:
+
+                total_price = int(total_price.replace(u'\xa0', '').replace(' kr', '').strip())
+
+            new_item = HouseListingItem()
+            new_item["finnkode"] = int(response.xpath('/html/body/main/section[2]/div[1]/table/tbody/tr[1]/td/text()').get())
+            new_item["latitude"] = latitude
+            new_item["longitude"] = longitude
+            new_item["postNumber"] = int(postCode)
+            new_item["totalPrice"] = total_price
+            new_item["usableArea"] = area
+            new_item["propertyType"] = prop_type
+            new_item["ownership"] = owner
+            new_item["energy"] = energy
+            new_item["bedrooms"] = bed
+            new_item["rooms"] = room
+            new_item["lastUpdated"] = self.standardize_date(response.xpath('/html/body/main/section[2]/div[1]/table/tbody/tr[2]/td/text()').get())
+            new_item["isSold"] = bool(True)
+            new_item["primaryRoom"] = primary
+            new_item["built"] = built_year
+            new_item["facilities"] = facilities
+            new_item["postArea"] = postLoc
+            new_item["localAreaName"] = response.xpath('//div[@data-testid="local-area-name"]/text()').get()
+            new_item["new"] = bool(False)
+            yield new_item
+

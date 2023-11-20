@@ -1,11 +1,19 @@
 import csv
 from dateutil.parser import parse
 
-input_file_path = 'house_listings_w_15var.csv'
-output_file_path = 'house_listing_w_15var_noZeroDupe.csv'
+input_file_path = 'house_listings_w_15var3.csv'
+output_file_path = 'house_listing_processed.csv'
 
-def is_valid_row(row, header_row):
-    return row != header_row and row['totalPrice'] != '0' and row['usableArea'] != '0' and row['latitude'] != '' and row['totalPrice'] != '' and row['usableArea'] != ''
+def is_valid_row_combined(row):
+    try:
+        price_condition = float(row['totalPrice'].strip()) >= 150000
+        area_condition = float(row['usableArea'].strip()) >= 15
+        latitude_condition = row['latitude'].strip() != ''
+        property_type_condition = row['propertyType'].strip() != 'Andre'
+        no_zero_condition = row['totalPrice'] != '0' and row['usableArea'] != '0'
+        return price_condition and area_condition and latitude_condition and property_type_condition and no_zero_condition
+    except ValueError:
+        return False
 
 def row_key(row):
     return tuple(value for key, value in row.items() if key != 'lastUpdated')
@@ -21,11 +29,10 @@ with open(input_file_path, 'r', newline='') as f, open(output_file_path, 'w', ne
     writer = csv.DictWriter(out_file, fieldnames=reader.fieldnames)
     writer.writeheader()
 
-    header_row = next(reader)
     latest_rows = {}
 
     for row in reader:
-        if is_valid_row(row, header_row):
+        if is_valid_row_combined(row):
             row_date = parse_date(row['lastUpdated'])
             if row_date is None:
                 continue

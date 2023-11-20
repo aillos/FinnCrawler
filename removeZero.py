@@ -1,6 +1,6 @@
 import csv
 
-input_file_path = 'house_listings_w_15var3.csv'
+input_file_path = 'house_listings_w_15var5.csv'
 output_file_path = 'house_listing_w_15var_noSmallArea.csv'
 
 
@@ -9,6 +9,7 @@ def is_valid_row(row):
         return (float(row['totalPrice'].strip()) >= 150000 and
                 float(row['usableArea'].strip()) >= 15 and
                 row['latitude'].strip() != '' and
+                row['longitude'].strip() != '' and
                 row['propertyType'].strip() != 'Andre')
     except ValueError:
         return False
