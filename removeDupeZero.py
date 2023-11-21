@@ -4,6 +4,7 @@ from dateutil.parser import parse
 input_file_path = 'house_listings_w_15var3.csv'
 output_file_path = 'house_listing_processed.csv'
 
+
 def is_valid_row_combined(row):
     try:
         price_condition = float(row['totalPrice'].strip()) >= 150000
@@ -15,14 +16,17 @@ def is_valid_row_combined(row):
     except ValueError:
         return False
 
+
 def row_key(row):
     return tuple(value for key, value in row.items() if key != 'lastUpdated')
+
 
 def parse_date(date_str):
     try:
         return parse(date_str)
     except ValueError:
         return None
+
 
 with open(input_file_path, 'r', newline='') as f, open(output_file_path, 'w', newline='') as out_file:
     reader = csv.DictReader(f)

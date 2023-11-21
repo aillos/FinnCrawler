@@ -10,6 +10,8 @@ def is_valid_row(row):
                 float(row['usableArea'].strip()) >= 15 and
                 row['latitude'].strip() != '' and
                 row['longitude'].strip() != '' and
+                row['latitude'].strip() != 'None' and
+                row['longitude'].strip() != 'None' and
                 float(row['usableArea'].strip()) <= 1000 and
                 row['propertyType'].strip() != 'Andre')
     except ValueError:
