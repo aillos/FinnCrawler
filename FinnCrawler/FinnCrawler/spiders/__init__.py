@@ -130,6 +130,7 @@ class FinnSpider(scrapy.Spider):
             # IF MULTIPLE UNITS
             if units:
                 for unit in units:
+
                     new_item = HouseListingItem()
                     new_item["finnkode"] = finnkode
                     new_item["latitude"] = latitude
@@ -152,10 +153,12 @@ class FinnSpider(scrapy.Spider):
                     new_item["postArea"] = postArea
                     new_item["localAreaName"] = localAreaName
                     new_item["new"] = bool(True)
+                    new_item["monthlyCost"] = None
                     yield new_item
 
             # IF ONLY ONE UNIT
             else:
+
                 new_item = HouseListingItem()
                 new_item["finnkode"] = finnkode
                 new_item["latitude"] = latitude
@@ -178,6 +181,7 @@ class FinnSpider(scrapy.Spider):
                 new_item["postArea"] = postArea
                 new_item["localAreaName"] = localAreaName
                 new_item["new"] = bool(True)
+                new_item["monthlyCost"] = None
                 yield new_item
 
         # IF NOT NYBYGG
@@ -222,12 +226,17 @@ class FinnSpider(scrapy.Spider):
             energy_last_word = energy_full_text.split()[-1] if energy_full_text else None
             owner = get_property_detail(response, "info-ownership-type")
             area = get_property_detail(response, "info-usable-area", r'(\d+)')
-            room = get_property_detail(response, "info-rooms")
+            room = int(get_property_detail(response, "info-rooms")) if get_property_detail(response, "info-rooms") else 0
             facilities = response.xpath('//section[@data-testid="object-facilities"]/div/div/text()').extract()
             facilities = facilities if facilities else None
             total_price_text = get_property_detail(response, "pricing-total-price")
             total_price = int(
                 total_price_text.replace(u'\xa0', '').replace(' kr', '').strip()) if total_price_text else None
+            monthlyCost_text = get_property_detail(response, "pricing-common-monthly-cost")
+            if monthlyCost_text:
+                monthlyCost = int(monthlyCost_text.replace(u'\xa0', '').replace(' kr', '').strip())
+            else:
+                monthlyCost = 0
 
             new_item = HouseListingItem()
             new_item["finnkode"] = int(
@@ -252,4 +261,5 @@ class FinnSpider(scrapy.Spider):
             new_item["postArea"] = postLoc
             new_item["localAreaName"] = response.xpath('//div[@data-testid="local-area-name"]/text()').get()
             new_item["new"] = bool(False)
+            new_item["monthlyCost"] = monthlyCost
             yield new_item

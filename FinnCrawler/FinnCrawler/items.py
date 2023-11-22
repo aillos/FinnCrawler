@@ -23,3 +23,4 @@ class HouseListingItem(scrapy.Item):
     localAreaName = scrapy.Field()
     postArea = scrapy.Field()
     new = scrapy.Field()
+    monthlyCost = scrapy.Field()
