@@ -3,18 +3,33 @@ import csv
 input_file_path = 'house_listings.csv'
 output_file_path = 'house_listing_clean.csv'
 
+
 def is_valid_row(row):
+    def safe_float(value, default=0.0):
+        try:
+            return float(value.strip())
+        except ValueError:
+            return default
+
     try:
-        return (float(row['totalPrice'].strip()) >= 150000 and
-                float(row['usableArea'].strip()) >= 15 and
-                row['latitude'].strip() != '' and
-                row['longitude'].strip() != '' and
-                row['latitude'].strip() != 'None' and
-                row['longitude'].strip() != 'None' and
-                float(row['usableArea'].strip()) <= 1000 and
-                row['propertyType'].strip() != 'Andre')
+        totalPrice = float(row['totalPrice'].strip())
+        usableArea = float(row['usableArea'].strip())
     except ValueError:
+
         return False
+
+    bedrooms = safe_float(row['bedrooms'], default=0.0)
+    rooms = safe_float(row['rooms'], default=0.0)
+
+    return (totalPrice >= 150000 and
+            usableArea >= 15 and
+            row['latitude'].strip() not in ['', 'None'] and
+            row['longitude'].strip() not in ['', 'None'] and
+            bedrooms <= 12 and
+            rooms <= 20 and
+            usableArea <= 1000 and
+            row['propertyType'].strip() != 'Andre')
+
 
 unique_rows = set()
 
