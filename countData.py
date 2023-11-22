@@ -35,13 +35,13 @@ with open(input_file_path, 'r', newline='') as f:
         for field in ['energy_color', 'energy_label', 'ownership', 'propertyType', 'isSold']:
             value = row[field].strip()
             if value:
-                if field == 'EnergyColor':
+                if field == 'energy_color':
                     count_energy_color[value] = count_energy_color.get(value, 0) + 1
-                elif field == 'EnergyLabel':
+                elif field == 'energy_label':
                     count_energy_label[value] = count_energy_label.get(value, 0) + 1
-                elif field == 'Ownership':
+                elif field == 'ownership':
                     count_ownership[value] = count_ownership.get(value, 0) + 1
-                elif field == 'PropertyType':
+                elif field == 'propertyType':
                     count_property_type[value] = count_property_type.get(value, 0) + 1
                 elif field == 'isSold':
                     count_is_sold[value] = count_is_sold.get(value, 0) + 1

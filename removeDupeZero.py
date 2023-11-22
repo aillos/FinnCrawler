@@ -21,6 +21,8 @@ def is_valid_row(row):
     bedrooms = safe_float(row['bedrooms'], default=0.0)
     rooms = safe_float(row['rooms'], default=0.0)
 
+    property_type = row['propertyType'].strip()
+
     return (totalPrice >= 150000 and
             usableArea >= 15 and
             row['latitude'].strip() not in ['', 'None'] and
@@ -28,7 +30,14 @@ def is_valid_row(row):
             bedrooms <= 12 and
             rooms <= 20 and
             usableArea <= 1000 and
-            row['propertyType'].strip() != 'Andre')
+            property_type != 'BygÃ¥rd/Flermannsbolig' and
+            property_type != 'Hytte' and
+            property_type != 'GÃ¥rdsbruk/SmÃ¥bruk' and
+            property_type != 'Garasje/Parkering' and
+            property_type != 'Produksjon/Industri' and
+            property_type != 'Tomter' and
+            property_type != 'Kombinasjonslokaler' and
+            property_type != 'Andre')
 
 
 unique_rows = set()
