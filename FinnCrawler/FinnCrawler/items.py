@@ -11,7 +11,6 @@ class HouseListingItem(scrapy.Item):
     ownership = scrapy.Field()
     energy_label = scrapy.Field()
     energy_color = scrapy.Field()
-    # createDate = scrapy.Field()
     bedrooms = scrapy.Field()
     lastUpdated = scrapy.Field()
     isSold = scrapy.Field()
